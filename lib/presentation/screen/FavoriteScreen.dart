@@ -19,7 +19,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final Map<String, Duration> _durations = {};
   int _selectedIndex = 2;
   late List<Playlist> userPlaylists = [];
-  final TextEditingController _usernameController = TextEditingController();
 
   // Phân trang
   int _currentPage = 0;
@@ -32,13 +31,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _loadDurations();
     _updateFavoritePlaylist();
     _loadUserPlaylists();
-    _usernameController.text = user?.displayName ?? 'Người dùng';
-  }
-
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    super.dispose();
   }
 
   Future<void> _loadDurations() async {
@@ -127,52 +119,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Navigator.pushNamed(context, '/playlist');
   }
 
-  Future<void> _updateUsername() async {
-    if (user != null && _usernameController.text.trim().isNotEmpty) {
-      try {
-        await user!.updateDisplayName(_usernameController.text.trim());
-        
-        setState(() {
-          // Cập nhật UI
-        });
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Tên người dùng đã được cập nhật')),
-        );
-      } catch (error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Không thể cập nhật tên người dùng')),
-        );
-      }
-    }
-  }
-
-  void _showEditDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Chỉnh sửa hồ sơ'),
-        content: TextField(
-          controller: _usernameController,
-          decoration: InputDecoration(labelText: 'Tên người dùng'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Hủy'),
-          ),
-          TextButton(
-            onPressed: () {
-              _updateUsername();
-              Navigator.pop(context);
-            },
-            child: Text('Lưu'),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     // Tính toán số lượng trang và danh sách bài hát cho trang hiện tại
@@ -186,7 +132,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         : [];
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -199,8 +145,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.grey.shade200,
-                      Colors.white,
+                      Colors.grey.shade800,
+                      Colors.black,
                     ],
                   ),
                 ),
@@ -211,20 +157,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Row(
                         children: [
                           IconButton(
-                            icon: Icon(Icons.arrow_back, color: Colors.black),
+                            icon: Icon(Icons.arrow_back, color: Colors.white),
                             onPressed: () => Navigator.pop(context),
                           ),
                           Spacer(),
+                          IconButton(
+                            icon: Icon(Icons.settings, color: Colors.white),
+                            onPressed: () {
+                              // Chức năng cài đặt (có thể thêm sau)
+                            },
+                          ),
                         ],
                       ),
                       const SizedBox(height: 20),
                       CircleAvatar(
                         radius: 60,
-                        backgroundColor: Colors.grey.shade300,
+                        backgroundColor: Colors.grey.shade700,
                         child: Icon(
                           Icons.person,
                           size: 60,
-                          color: Colors.grey.shade700,
+                          color: Colors.white,
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -233,7 +185,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: Colors.white,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -241,18 +193,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         user?.email ?? '',
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.grey.shade700,
+                          color: Colors.grey,
                         ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '0 followers',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '•',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '0 following',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           OutlinedButton(
-                            onPressed: _showEditDialog,
+                            onPressed: () {
+                              // Chức năng chỉnh sửa hồ sơ
+                            },
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: Colors.black,
-                              side: BorderSide(color: Colors.grey.shade400),
+                              foregroundColor: Colors.white,
+                              side: BorderSide(color: Colors.grey),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
@@ -280,7 +263,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: Colors.white,
                           ),
                         ),
                         TextButton(
@@ -344,103 +327,76 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               
                               return Padding(
                                 padding: const EdgeInsets.only(bottom: 16.0),
-                                child: Container(
-                                  height: 80,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    color: Colors.white,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.05),
-                                        blurRadius: 5,
-                                        offset: const Offset(0, 3),
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => PlaylistDetailScreen(
+                                          playlist: playlist,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Row(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Image.asset(
+                                          coverImage,
+                                          width: 80,
+                                          height: 80,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              playlist.name,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18,
+                                                color: Colors.white,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              '${songs.length} bài hát',
+                                              style: TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: Icon(
+                                          Icons.play_circle_filled,
+                                          color: Colors.green,
+                                          size: 40,
+                                        ),
+                                        onPressed: () {
+                                          if (songs.isNotEmpty) {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => NowPlayingScreen(
+                                                  song: songs[0],
+                                                  songList: songs,
+                                                  initialIndex: 0,
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                        },
                                       ),
                                     ],
-                                  ),
-                                  child: InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => PlaylistDetailScreen(
-                                            playlist: playlist,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    child: Row(
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius: const BorderRadius.only(
-                                            topLeft: Radius.circular(12),
-                                            bottomLeft: Radius.circular(12),
-                                          ),
-                                          child: Image.asset(
-                                            coverImage,
-                                            width: 80,
-                                            height: 80,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 16),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                playlist.name,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 18,
-                                                  color: Colors.black,
-                                                ),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              const SizedBox(height: 4),
-                                              Text(
-                                                '${songs.length} bài hát',
-                                                style: TextStyle(
-                                                  color: Colors.grey.shade700,
-                                                  fontSize: 14,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.only(right: 16.0),
-                                          child: CircleAvatar(
-                                            backgroundColor: const Color(0xFF31C934).withOpacity(0.2),
-                                            radius: 20,
-                                            child: IconButton(
-                                              icon: const Icon(Icons.play_arrow, color: Color(0xFF31C934)),
-                                              onPressed: () {
-                                                if (songs.isNotEmpty) {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) => NowPlayingScreen(
-                                                        song: songs[0],
-                                                        songList: songs,
-                                                        initialIndex: 0,
-                                                      ),
-                                                    ),
-                                                  );
-                                                } else {
-                                                  ScaffoldMessenger.of(context).showSnackBar(
-                                                    SnackBar(
-                                                      content: Text('Danh sách phát này không có bài hát nào'),
-                                                      duration: const Duration(seconds: 2),
-                                                    ),
-                                                  );
-                                                }
-                                              },
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
                                   ),
                                 ),
                               );
@@ -458,22 +414,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
         onTap: _onItemTapped,
         selectedItemColor: Colors.green,
         unselectedItemColor: Colors.grey,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.black,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
-            backgroundColor: Colors.white,
+            backgroundColor: Colors.black,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
             label: 'Search',
-            backgroundColor: Colors.white,
+            backgroundColor: Colors.black,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Profile',
-            backgroundColor: Colors.white,
+            backgroundColor: Colors.black,
           ),
         ],
       ),
