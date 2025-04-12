@@ -431,7 +431,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 } else {
                                                   ScaffoldMessenger.of(context).showSnackBar(
                                                     SnackBar(
-                                                      content: Text('Danh sách phát này không có bài hát nào'),
+                                                      content: Text('Danh sách phát này không có bài hát'),
                                                       duration: const Duration(seconds: 2),
                                                     ),
                                                   );
